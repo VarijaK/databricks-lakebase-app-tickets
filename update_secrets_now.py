@@ -8,7 +8,7 @@ w = WorkspaceClient()
 
 # Configuration for the "tickets" project
 ENDPOINT_NAME = "projects/tickets/branches/production/endpoints/primary"
-DATABASE_NAME = "databricks-postgres"
+DATABASE_NAME = "databricks_postgres"  # Note: underscore, not hyphen!
 
 print("=" * 80)
 print("UPDATING SECRETS FOR LAKEBASE OAUTH AUTHENTICATION")

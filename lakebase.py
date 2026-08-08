@@ -9,7 +9,6 @@ on each connection.
 import base64
 import os
 from contextlib import contextmanager
-from urllib.parse import urlparse, urlunparse
 
 import psycopg2
 from databricks.sdk import WorkspaceClient
