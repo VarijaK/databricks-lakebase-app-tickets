@@ -108,6 +108,12 @@ def handle_exception(err):
 @app.route("/")
 def index():
     """Simple UI for ticket management."""
+    return render_template("index.html")
+
+
+@app.route("/api")
+def api_info():
+    """API documentation endpoint."""
     return jsonify({
         "message": "Ticket Support API",
         "endpoints": {

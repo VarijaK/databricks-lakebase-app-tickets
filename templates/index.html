@@ -1,749 +1,545 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Massive Stock Watchlist</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 40px 20px;
-      color: #2d3748;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .header {
-      background: white;
-      border-radius: 16px;
-      padding: 32px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-      margin-bottom: 24px;
-    }
-
-    h1 {
-      font-size: 32px;
-      font-weight: 700;
-      color: #1a202c;
-      margin-bottom: 8px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .subtitle {
-      font-size: 16px;
-      color: #718096;
-      line-height: 1.6;
-    }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 32px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-      margin-bottom: 24px;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #1a202c;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card-title::before {
-      content: '📊';
-      font-size: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #4a5568;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #e2e8f0;
-      border-radius: 10px;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      background: #f7fafc;
-    }
-
-    input[type="text"]:focus {
-      outline: none;
-      border-color: #667eea;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-      transform: translateY(-1px);
-    }
-
-    input[type="text"]::placeholder {
-      color: #a0aec0;
-    }
-
-    button {
-      margin-top: 20px;
-      padding: 14px 32px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-      width: 100%;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    #result {
-      margin-top: 20px;
-      padding: 16px 20px;
-      border-radius: 10px;
-      font-size: 14px;
-      line-height: 1.6;
-      min-height: 20px;
-      animation: fadeIn 0.3s ease;
-    }
-
-    #result:not(:empty) {
-      background: #e6fffa;
-      border-left: 4px solid #38b2ac;
-      color: #234e52;
-    }
-
-    .hint {
-      color: #718096;
-      font-size: 14px;
-      line-height: 1.6;
-      padding: 12px 16px;
-      background: #edf2f7;
-      border-radius: 8px;
-      border-left: 3px solid #cbd5e0;
-    }
-
-    .table-container {
-      overflow-x: auto;
-      margin-top: 8px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-    }
-
-    thead {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    th {
-      text-align: left;
-      padding: 16px;
-      font-size: 12px;
-      color: white;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    th:first-child {
-      border-top-left-radius: 10px;
-    }
-
-    th:last-child {
-      border-top-right-radius: 10px;
-    }
-
-    tbody tr {
-      transition: all 0.2s ease;
-      background: white;
-    }
-
-    tbody tr:hover {
-      background: #f7fafc;
-      transform: scale(1.01);
-    }
-
-    tbody tr:last-child td:first-child {
-      border-bottom-left-radius: 10px;
-    }
-
-    tbody tr:last-child td:last-child {
-      border-bottom-right-radius: 10px;
-    }
-
-    td {
-      text-align: left;
-      padding: 16px;
-      border-bottom: 1px solid #e2e8f0;
-      color: #4a5568;
-      font-size: 14px;
-    }
-
-    tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    td:first-child {
-      font-weight: 700;
-      color: #667eea;
-      font-size: 16px;
-    }
-
-    .delete-btn {
-      background: #fc8181;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(252, 129, 129, 0.3);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      margin: 0;
-      width: auto;
-    }
-
-    .delete-btn:hover {
-      background: #f56565;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(252, 129, 129, 0.4);
-    }
-
-    .delete-btn:active {
-      transform: translateY(0);
-    }
-
-    .news-btn {
-      background: #4299e1;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      margin: 0 4px 0 0;
-      width: auto;
-    }
-
-    .news-btn:hover {
-      background: #3182ce;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
-    }
-
-    .news-btn:active {
-      transform: translateY(0);
-    }
-
-    .fetch-btn {
-      background: #48bb78;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 10px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
-      display: block;
-      margin-bottom: 6px;
-      width: 100%;
-    }
-
-    .fetch-btn:hover {
-      background: #38a169;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
-    }
-
-    .fetch-btn:active {
-      transform: translateY(0);
-    }
-
-    td:last-child {
-      text-align: center;
-      padding: 12px;
-      vertical-align: middle;
-    }
-
-    .action-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      min-width: 120px;
-    }
-
-    .action-buttons button {
-      width: 100%;
-      margin: 0;
-      padding: 6px 10px;
-      font-size: 13px;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.6);
-      animation: fadeIn 0.2s ease;
-    }
-
-    .modal-content {
-      background: white;
-      margin: 5% auto;
-      padding: 0;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 700px;
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
-      animation: slideUp 0.3s ease;
-      max-height: 80vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .modal-header {
-      padding: 24px 32px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-radius: 16px 16px 0 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-header h2 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: 700;
-    }
-
-    .close {
-      color: white;
-      font-size: 32px;
-      font-weight: 300;
-      cursor: pointer;
-      line-height: 1;
-      transition: all 0.2s ease;
-    }
-
-    .close:hover {
-      transform: scale(1.1);
-    }
-
-    .modal-body {
-      padding: 24px 32px;
-      overflow-y: auto;
-      flex: 1;
-    }
-
-    .news-article {
-      padding: 20px;
-      border-bottom: 1px solid #e2e8f0;
-      transition: all 0.2s ease;
-    }
-
-    .news-article:hover {
-      background: #f7fafc;
-    }
-
-    .news-article:last-child {
-      border-bottom: none;
-    }
-
-    .news-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #1a202c;
-      margin-bottom: 8px;
-      line-height: 1.4;
-    }
-
-    .news-title a {
-      color: #667eea;
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-
-    .news-title a:hover {
-      color: #764ba2;
-      text-decoration: underline;
-    }
-
-    .news-meta {
-      display: flex;
-      gap: 16px;
-      font-size: 13px;
-      color: #718096;
-      margin-bottom: 8px;
-    }
-
-    .news-description {
-      font-size: 14px;
-      color: #4a5568;
-      line-height: 1.6;
-    }
-
-    .news-loading {
-      text-align: center;
-      padding: 40px;
-      color: #718096;
-      font-size: 16px;
-    }
-
-    .news-empty {
-      text-align: center;
-      padding: 60px 20px;
-      color: #a0aec0;
-    }
-
-    .news-empty-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: #a0aec0;
-    }
-
-    .empty-state-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-    }
-
-    .empty-state-text {
-      font-size: 16px;
-      color: #718096;
-    }
-
-    @media (max-width: 640px) {
-      .header, .card {
-        padding: 24px;
-      }
-
-      h1 {
-        font-size: 24px;
-      }
-
-      table {
-        font-size: 12px;
-      }
-
-      th, td {
-        padding: 12px 8px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Ticket System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background: #0052a3;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .ticket {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+        
+        .ticket:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        
+        .ticket-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .ticket-id {
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .ticket-meta {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-open {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .status-in_progress {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .status-resolved {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .status-closed {
+            background: #f5f5f5;
+            color: #757575;
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        
+        .filter-bar select {
+            width: auto;
+            min-width: 150px;
+        }
+        
+        .message {
+            background: #f9f9f9;
+            border-left: 3px solid #0066cc;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        
+        .message-author {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .message-time {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .message-text {
+            color: #555;
+            margin-top: 8px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close-btn {
+            background: transparent;
+            color: #999;
+            font-size: 24px;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover {
+            color: #333;
+            background: transparent;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+        
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>Stock Watchlist</h1>
-      <p class="subtitle">Track your favorite stocks in real-time with data from the Massive API</p>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Add Stock Symbol</div>
-      <p class="hint">Enter a single ticker symbol. This sends exactly ONE call to the Massive API to fetch the latest price, then adds it to your watchlist.</p>
-
-      <form id="stock-form">
-        <label for="symbol">Ticker Symbol</label>
-        <input type="text" id="symbol" name="symbol" placeholder="AAPL" required>
-        <button type="submit">Add to Watchlist</button>
-      </form>
-
-      <div id="result"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Your Watchlist</div>
-      <div class="table-container">
-        <table id="watchlist-table">
-          <thead>
-            <tr>
-              <th>Symbol</th>
-              <th>Email</th>
-              <th>Latest Price</th>
-              <th>Updated</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="watchlist-body"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- News Modal -->
-  <div id="newsModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="newsModalTitle">📰 Loading...</h2>
-        <span class="close" onclick="closeNewsModal()">&times;</span>
-      </div>
-      <div class="modal-body" id="newsModalBody">
-        <div class="news-loading">⏳ Loading news...</div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const form = document.getElementById("stock-form");
-    const resultEl = document.getElementById("result");
-    const watchlistBody = document.getElementById("watchlist-body");
-    const newsModal = document.getElementById("newsModal");
-    const newsModalTitle = document.getElementById("newsModalTitle");
-    const newsModalBody = document.getElementById("newsModalBody");
-
-    function closeNewsModal() {
-      newsModal.style.display = "none";
-    }
-
-    // Close modal when clicking outside of it
-    window.onclick = function(event) {
-      if (event.target == newsModal) {
-        closeNewsModal();
-      }
-    }
-
-    async function showNews(symbol) {
-      newsModal.style.display = "block";
-      newsModalTitle.textContent = `📰 ${symbol} News`;
-      newsModalBody.innerHTML = '<div class="news-loading">⏳ Loading news...</div>';
-
-      try {
-        const resp = await fetch(`/news/${symbol}`);
-        const articles = await resp.json();
-
-        if (!resp.ok) {
-          newsModalBody.innerHTML = `<div class="news-empty"><div class="news-empty-icon">❌</div><div>${articles.error || 'Failed to load news'}</div></div>`;
-          return;
-        }
-
-        if (!articles || articles.length === 0) {
-          newsModalBody.innerHTML = `<div class="news-empty"><div class="news-empty-icon">📄</div><div>No recent news found for ${symbol}</div></div>`;
-          return;
-        }
-
-        let html = '';
-        articles.forEach((article) => {
-          const date = new Date(article.published_utc).toLocaleString();
-          const publisher = article.publisher_name || article.publisher?.name || 'Unknown';
-          const title = article.title || 'Untitled';
-          const description = article.description || 'No description available.';
-          const url = article.article_url || '#';
-
-          html += `
-            <div class="news-article">
-              <div class="news-title">
-                <a href="${url}" target="_blank" rel="noopener noreferrer">${title}</a>
-              </div>
-              <div class="news-meta">
-                <span>📅 ${date}</span>
-                <span>📰 ${publisher}</span>
-              </div>
-              <div class="news-description">${description}</div>
-            </div>
-          `;
-        });
-
-        newsModalBody.innerHTML = html;
-      } catch (err) {
-        newsModalBody.innerHTML = `<div class="news-empty"><div class="news-empty-icon">❌</div><div>Error loading news: ${err}</div></div>`;
-      }
-    }
-
-    async function fetchNews(symbol) {
-      resultEl.innerHTML = '<div style="background: #e6f7ff; border-left-color: #3b82f6; color: #1e40af;">⏳ Fetching latest news for ' + symbol + '...</div>';
-
-      try {
-        const resp = await fetch(`/news/${symbol}/fetch`, {
-          method: "POST",
-        });
-        const data = await resp.json();
-
-        if (!resp.ok) {
-          resultEl.innerHTML = `<div style="background: #fff5f5; border-left-color: #fc8181; color: #742a2a;">❌ ${data.error || 'Failed to fetch news'}</div>`;
-          return;
-        }
-
-        if (data.new_articles === 0) {
-          resultEl.innerHTML = `<div style="background: #fef3c7; border-left-color: #f59e0b; color: #78350f;">ℹ️ No new articles found for <strong>${symbol}</strong></div>`;
-        } else {
-          resultEl.innerHTML = `<div>✅ Fetched and stored <strong>${data.new_articles}</strong> new article${data.new_articles !== 1 ? 's' : ''} for <strong>${symbol}</strong></div>`;
-        }
-      } catch (err) {
-        resultEl.innerHTML = `<div style="background: #fff5f5; border-left-color: #fc8181; color: #742a2a;">❌ Failed to fetch news: ${err}</div>`;
-      }
-    }
-
-    async function deleteStock(symbol) {
-      if (!confirm(`Are you sure you want to remove ${symbol} from your watchlist?`)) {
-        return;
-      }
-
-      try {
-        const resp = await fetch(`/watchlist/${symbol}`, {
-          method: "DELETE",
-        });
-        const data = await resp.json();
-        if (!resp.ok) {
-          resultEl.innerHTML = `<div style="background: #fff5f5; border-left-color: #fc8181; color: #742a2a;">❌ ${data.error || resp.statusText}</div>`;
-          return;
-        }
-        resultEl.innerHTML = `<div style="background: #fff5f5; border-left-color: #fc8181; color: #742a2a;">🗑️ Removed <strong>${symbol}</strong> from watchlist</div>`;
-        loadWatchlist();
-      } catch (err) {
-        resultEl.innerHTML = `<div style="background: #fff5f5; border-left-color: #fc8181; color: #742a2a;">❌ Failed to delete: ${err}</div>`;
-      }
-    }
-
-    async function loadWatchlist() {
-      try {
-        const resp = await fetch("/watchlist");
-        const data = await resp.json();
-        if (!resp.ok) {
-          resultEl.innerHTML = `<div style="background: #fff5f5; border-left-color: #fc8181; color: #742a2a;">❌ Error loading watchlist: ${data.error || resp.statusText}</div>`;
-          return;
-        }
-        watchlistBody.innerHTML = "";
-        if (data.length === 0) {
-          watchlistBody.innerHTML = `
-            <tr>
-              <td colspan="5" style="border: none;">
-                <div class="empty-state">
-                  <div class="empty-state-icon">📊</div>
-                  <div class="empty-state-text">No stocks in your watchlist yet. Add one above to get started!</div>
+    <div class="container">
+        <h1>Support Ticket System</h1>
+        <p class="subtitle">Manage and track support tickets</p>
+        
+        <div class="card">
+            <h2>Create New Ticket</h2>
+            <div id="createAlert"></div>
+            <form id="createTicketForm">
+                <div class="form-group">
+                    <label for="ticketTitle">Title *</label>
+                    <input type="text" id="ticketTitle" required placeholder="Brief description of the issue">
                 </div>
-              </td>
-            </tr>
-          `;
-          return;
-        }
-        data.forEach((row) => {
-          const tr = document.createElement("tr");
-          const price = row.latest_price !== null && row.latest_price !== undefined
-            ? "$" + Number(row.latest_price).toFixed(2)
-            : "-";
-          const updated = row.updated_at ? new Date(row.updated_at).toLocaleString() : "-";
-          tr.innerHTML = `
-            <td>${row.symbol}</td>
-            <td>${row.email || "-"}</td>
-            <td>${price}</td>
-            <td>${updated}</td>
-            <td>
-              <div class="action-buttons">
-                <button class="fetch-btn" onclick="fetchNews('${row.symbol}')">🔄 Fetch</button>
-                <button class="news-btn" onclick="showNews('${row.symbol}')">📰 View</button>
-                <button class="delete-btn" onclick="deleteStock('${row.symbol}')">🗑️ Delete</button>
-              </div>
-            </td>
-          `;
-          watchlistBody.appendChild(tr);
+                <div class="form-group">
+                    <label for="ticketStatus">Status</label>
+                    <select id="ticketStatus">
+                        <option value="open">Open</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+                <button type="submit">Create Ticket</button>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h2>All Tickets</h2>
+            <div class="filter-bar">
+                <label>Filter by status:</label>
+                <select id="statusFilter">
+                    <option value="">All Tickets</option>
+                    <option value="open">Open</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="closed">Closed</option>
+                </select>
+                <button onclick="loadTickets()">Refresh</button>
+            </div>
+            <div id="ticketsList"></div>
+        </div>
+    </div>
+    
+    <!-- Ticket Detail Modal -->
+    <div id="ticketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Ticket Details</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Load tickets on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTickets();
         });
-      } catch (err) {
-        resultEl.innerHTML = `<div style="background: #fff5f5; border-left-color: #fc8181; color: #742a2a;">❌ Failed to load watchlist: ${err}</div>`;
-      }
-    }
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const symbol = document.getElementById("symbol").value;
-      resultEl.innerHTML = '<div style="background: #e6f7ff; border-left-color: #3b82f6; color: #1e40af;">⏳ Adding to watchlist...</div>';
-
-      try {
-        const resp = await fetch("/watchlist", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ symbol }),
+        
+        // Create ticket form
+        document.getElementById('createTicketForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('ticketTitle').value;
+            const status = document.getElementById('ticketStatus').value;
+            
+            try {
+                const response = await fetch('/tickets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, status })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert('createAlert', 'Ticket created successfully!', 'success');
+                    document.getElementById('createTicketForm').reset();
+                    loadTickets();
+                } else {
+                    showAlert('createAlert', 'Error: ' + (data.error || 'Failed to create ticket'), 'error');
+                }
+            } catch (error) {
+                showAlert('createAlert', 'Error: ' + error.message, 'error');
+            }
         });
-        const data = await resp.json();
-        if (!resp.ok) {
-          resultEl.innerHTML = `<div style="background: #fff5f5; border-left-color: #fc8181; color: #742a2a;">❌ ${data.error || resp.statusText}</div>`;
-          return;
+        
+        // Status filter
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            loadTickets();
+        });
+        
+        // Load tickets
+        async function loadTickets() {
+            const status = document.getElementById('statusFilter').value;
+            const url = status ? `/tickets?status=${status}` : '/tickets';
+            
+            try {
+                const response = await fetch(url);
+                const tickets = await response.json();
+                
+                const ticketsList = document.getElementById('ticketsList');
+                
+                if (tickets.length === 0) {
+                    ticketsList.innerHTML = '<div class="empty-state">No tickets found</div>';
+                    return;
+                }
+                
+                ticketsList.innerHTML = tickets.map(ticket => `
+                    <div class="ticket" onclick="viewTicket(${ticket.ticket_id})">
+                        <div class="ticket-header">
+                            <div class="ticket-title">${escapeHtml(ticket.title)}</div>
+                            <div class="ticket-id">#${ticket.ticket_id}</div>
+                        </div>
+                        <div class="ticket-meta">
+                            <span class="status-badge status-${ticket.status}">${ticket.status.replace('_', ' ')}</span>
+                            <span> • Created by ${escapeHtml(ticket.created_by)} • ${formatDate(ticket.created_at)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('ticketsList').innerHTML = 
+                    '<div class="empty-state">Error loading tickets: ' + error.message + '</div>';
+            }
         }
-        resultEl.innerHTML = `<div>✅ Successfully added <strong>${data.symbol}</strong> at price <strong>${Number(data.latest_price).toFixed(2)}</strong></div>`;
-        document.getElementById("symbol").value = "";
-        loadWatchlist();
-      } catch (err) {
-        resultEl.innerHTML = `<div style="background: #fff5f5; border-left-color: #fc8181; color: #742a2a;">❌ Request failed: ${err}</div>`;
-      }
-    });
-
-    loadWatchlist();
-  </script>
+        
+        // View ticket details
+        async function viewTicket(ticketId) {
+            try {
+                const response = await fetch(`/tickets/${ticketId}`);
+                const ticket = await response.json();
+                
+                if (!response.ok) {
+                    alert('Error: ' + (ticket.error || 'Failed to load ticket'));
+                    return;
+                }
+                
+                const modalContent = document.getElementById('modalContent');
+                modalContent.innerHTML = `
+                    <div class="ticket-meta" style="margin-bottom: 20px;">
+                        <span class="status-badge status-${ticket.status}">${ticket.status.replace('_', ' ')}</span>
+                        <p style="margin-top: 10px; color: #666;">
+                            Created by ${escapeHtml(ticket.created_by)}<br>
+                            ${formatDate(ticket.created_at)}
+                        </p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Update Status</label>
+                        <select id="updateStatus">
+                            <option value="open" ${ticket.status === 'open' ? 'selected' : ''}>Open</option>
+                            <option value="in_progress" ${ticket.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
+                            <option value="resolved" ${ticket.status === 'resolved' ? 'selected' : ''}>Resolved</option>
+                            <option value="closed" ${ticket.status === 'closed' ? 'selected' : ''}>Closed</option>
+                        </select>
+                    </div>
+                    
+                    <button onclick="updateTicketStatus(${ticket.ticket_id})">Update Status</button>
+                    
+                    <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+                    
+                    <h3 style="margin-bottom: 15px;">Messages (${ticket.messages.length})</h3>
+                    
+                    ${ticket.messages.length === 0 ? '<p style="color: #999;">No messages yet</p>' : 
+                        ticket.messages.map(msg => `
+                            <div class="message">
+                                <div class="message-author">${escapeHtml(msg.author)}</div>
+                                <div class="message-time">${formatDate(msg.created_at)}</div>
+                                <div class="message-text">${escapeHtml(msg.message_text)}</div>
+                            </div>
+                        `).join('')
+                    }
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>Add Message</label>
+                        <textarea id="newMessage" placeholder="Type your message here..."></textarea>
+                    </div>
+                    
+                    <button onclick="addMessage(${ticket.ticket_id})">Send Message</button>
+                `;
+                
+                document.getElementById('modalTitle').textContent = ticket.title;
+                document.getElementById('ticketModal').classList.add('active');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        // Update ticket status
+        async function updateTicketStatus(ticketId) {
+            const status = document.getElementById('updateStatus').value;
+            
+            try {
+                const response = await fetch(`/tickets/${ticketId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                
+                if (response.ok) {
+                    alert('Status updated successfully!');
+                    closeModal();
+                    loadTickets();
+                } else {
+                    const data = await response.json();
+                    alert('Error: ' + (data.error || 'Failed to update status'));
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        // Add message
+        async function addMessage(ticketId) {
+            const messageText = document.getElementById('newMessage').value.trim();
+            
+            if (!messageText) {
+                alert('Please enter a message');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/tickets/${ticketId}/messages`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message_text: messageText })
+                });
+                
+                if (response.ok) {
+                    viewTicket(ticketId); // Reload ticket details
+                } else {
+                    const data = await response.json();
+                    alert('Error: ' + (data.error || 'Failed to add message'));
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('ticketModal').classList.remove('active');
+        }
+        
+        // Close modal on background click
+        document.getElementById('ticketModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        // Utility functions
+        function showAlert(elementId, message, type) {
+            const alertDiv = document.getElementById(elementId);
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => { alertDiv.innerHTML = ''; }, 5000);
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString();
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
 </body>
 </html>
