@@ -6,7 +6,9 @@ env:
   - name: LAKEBASE_SECRET_SCOPE
     value: "database"
   - name: LAKEBASE_SECRET_KEY
-    value: "lakebase-url"
+    value: "lakebase-endpoint"
+  - name: LAKEBASE_DBNAME_KEY
+    value: "lakebase-database"
   - name: TICKETS_TABLE
     value: "tickets"
   - name: MESSAGES_TABLE
